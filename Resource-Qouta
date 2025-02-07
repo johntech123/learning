@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: my-app-quota
+  namespace: default  # Specify the namespace
+spec:
+  hard:
+    requests.cpu: "4"        # Maximum total CPU requests allowed in the namespace
+    requests.memory: "8Gi"   # Maximum total memory requests allowed in the namespace
+    limits.cpu: "8"          # Maximum total CPU limits allowed in the namespace
+    limits.memory: "16Gi"    # Maximum total memory limits allowed in the namespace
+    pods: "10"               # Maximum total number of pods allowed in the namespace
+
+now deployment:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+  namespace: default  # Namespace where the Deployment will be created
+spec:
+  replicas: 3  # Number of Pods to create
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-app-container
+          image: my-app-image:latest  # Replace with your container image
+          resources:
+            requests:
+              cpu: "1"        # Request 1 CPU for each pod
+              memory: "2Gi"   # Request 2Gi of memory for each pod
+            limits:
+              cpu: "2"        # Limit each pod to 2 CPUs
+              memory: "4Gi"   # Limit each pod to 4Gi of memory
+          ports:
+            - containerPort: 8080
