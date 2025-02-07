@@ -1,1 +1,49 @@
+apiVersion: apps/v1        SAB SE PEHLE DEPLOYMENT BANENGI WITH RESOURCE QOUTA
+kind: Deployment
+metadata:
+  name: my-app-deployment
+  labels:
+    app: my-app
+spec:
+  replicas: 3  # Number of pods in the deployment
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-app-container
+          image: my-app-image:latest  # Replace with your container image
+          ports:
+            - containerPort: 8080    # Port section moved above resources
+          resources:
+            requests:
+              memory: "128Mi"      # Minimum memory requested
+              cpu: "100m"          # Minimum CPU requested (100m = 0.1 CPU core)
+            limits:
+              memory: "256Mi"      # Maximum memory limit
+              cpu: "500m"  
+
+NOW HPA MANIFEST BANAYENGE JISME DEPLOYMENT KA REFERENCE DENGE (ScalTargetRef)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-app-deployment  # This is where you specify the Deployment name
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50   same for VPA
 
