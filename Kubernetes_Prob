@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-app-container
+          image: my-app-image:latest  # Replace with your container image
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /healthz             # HTTP endpoint to check startup
+              port: 8080                 # Port on which the container is running
+            initialDelaySeconds: 10       # Delay before starting the probe (allow app to initialize)
+            periodSeconds: 5             # Period between subsequent checks
+            failureThreshold: 30         # Number of consecutive failures before considering the container failed
+            timeoutSeconds: 2            # Timeout for the probe to respond
+          livenessProbe:
+            httpGet:
+              path: /healthz             # Path to check for liveness
+              port: 8080                 # Port for liveness probe
+            initialDelaySeconds: 5       # Delay before the first liveness probe
+            periodSeconds: 10            # Period to check the liveness
+            failureThreshold: 3          # Threshold for failure
+            timeoutSeconds: 2            # Timeout for the probe to respond
+          readinessProbe:
+            httpGet:
+              path: /readiness           # Path to check for readiness
+              port: 8080                 # Port for readiness probe
+            initialDelaySeconds: 5       # Delay before readiness probe starts
+            periodSeconds: 10            # Period to check readiness
+            failureThreshold: 3          # Threshold for failure
+            timeoutSeconds: 2            # Timeout for the probe to respond
