@@ -1,1 +1,0 @@
-node affinity pod affinity and node schedular
