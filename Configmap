@@ -1,1 +1,59 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo-config
+  namespace: default
+data:
+  DB_URL: HBSBSBDJSBDJBJDBWD  
 
+NOW SPECIFY THIS CONFIGMAP WITHIN POD MANIFEST
+1) AS ENV VARIABLE
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+      env:
+       name: DB_URL
+       valuefrom:
+         secretKeyRef:
+           name: demo-config
+           key: DB_URL
+
+2)MOUNT VOLUME
+
+      spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          name: config-voulme
+          mountPath: /etc/config
+        voulmes:
+          name: config-volume
+           configmap:
+             name: demo-config      thats it
+
+to create a configmap with cli 
+
+kubectl create configmap <name-of-configmap> --from-literal=key=value
+
+       
