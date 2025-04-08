@@ -47,3 +47,26 @@ spec:
           type: Utilization
           averageUtilization: 50   same for VPA
 
+HPA doesnt support cooling period natively but we can use below strategy to slow down the behavior of scale-up and down
+
+behavior:
+  scaleDown:
+    stabilizationWindowSeconds: 300  it will observe matrix for five mint then decide to scale up-down
+    policies:
+    - type: Percent       once its decided it will triger
+      value: 70          it will scale-up pod 70 percent in 17 sec
+      periodSeconds: 17
+  scaleUp:
+    stabilizationWindowSeconds: 0  it wil react quickly
+    policies:
+    - type: Percent
+      value: 100
+      periodSeconds: 15
+
+
+
+    - type: Pods        ya bhi karskte matlb pod kitne increase karna hai ya to upar ka ya ye
+      value: 4
+      periodSeconds: 15
+    selectPolicy: Max
+
