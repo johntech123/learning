@@ -19,7 +19,7 @@ spec:
             - containerPort: 8080
           startupProbe:
             httpGet:
-              path: /healthz             # HTTP endpoint to check startup
+              path: /healthz             # HTTP endpoint to check startup (its a common http endpoint we define in our app that resturn 200 OK when app is healthy
               port: 8080                 # Port on which the container is running
             initialDelaySeconds: 10       # Delay before starting the probe (allow app to initialize)
             periodSeconds: 5             # Period between subsequent checks
@@ -40,4 +40,4 @@ spec:
             initialDelaySeconds: 5       # Delay before readiness probe starts
             periodSeconds: 10            # Period to check readiness
             failureThreshold: 3          # Threshold for failure
-            timeoutSeconds: 2            # Timeout for the probe to respond
+            timeoutSeconds: 2            # Timeout for the probe to respond 2 sec responce ka wait karna 
