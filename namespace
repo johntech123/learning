@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: development
+
+kubectl apply -f 
+
+or with cli
+
+kubectl create ns dev
+
+kubectl config set-context --current --namespace= <ns-name> to set the ns context
