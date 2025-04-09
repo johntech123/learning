@@ -32,7 +32,7 @@ spec:
       env:
        name: DB_URL
        valuefrom:
-         secretKeyRef:
+         configMapKeyRef:
            name: demo-config
            key: DB_URL
 
