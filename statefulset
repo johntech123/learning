@@ -1,1 +1,77 @@
+First we create storage-class
+
+storageClass:
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: Demo-storage-class
+provisioner: ebs.csi.aws.com   # EBS CSI Driver
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Retain          # <--- retain:if pvc delete pv will remain available, Delete:if pvc delete associate pv will also delete
+parameters:
+  type: gp3                    # EBS volume type (gp3 recommended)
+  fsType: ext4                 # Optional, default is ext4
+
+##then we create Headless-type-service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx      this service name we will define in statefulset
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+  clusterIP: None     this defines that its Headless-service
+  selector:
+    app: nginx       this label and selector should be there in statefulset within templete
+-----
+then we write statefulset manifest
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: app-statefulset
+spec:
+  selector:
+    matchLabels:
+      app: nginx       #should match service label & selector
+  serviceName: "nginx"   #must match the headless-service-name
+  replicas: 3 # by default is 1
+  minReadySeconds: 10 # by default is 0  after creation of pod k8s wait for 10 sec to mark is available once healthcheck is done
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain    # Retain PVCs when StatefulSet is deleted
+    whenScaled: Retain     # Retain PVCs when scaled down
+  template:
+    metadata:
+      labels:
+        app: nginx # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10  it tells k8s how many sec to wait before forcfully stopping a pod when its being dleted or rstarted
+      containers:
+      - name: nginx
+        image: registry.k8s.io/nginx-slim:0.24
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteOnce" ] 
+      storageClassName: "my-storage-class"    here you have to provide storageclass name (example EBS)
+      resources:
+        requests:
+          storage: 1Gi
+
+
+
+#in statefulset we have to provide servicename
+
+
+
 
