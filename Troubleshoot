@@ -1,0 +1,36 @@
+Q:Crashloopbackoff:
+
+CrashLoopBackOff can be occur by many reason 
+• maybe the code issue or maybe you have override the container`s defoult command and give an invalid one.
+• your app expect a config file, env variable or secret that isnt present
+• the resource allocation issue your node doesnt have enough resource 
+• If you have liveness or readiness probes set and they fail, Kubernetes will attempt to restart the container. kubectl logs <pod-name> or 
+  MAYBE Probs are misconfigured your application need more time to start but initialdelaysecond is 7 sec then it will restart it contionuosly for that u have to modify the initialdelaysec    or maybe oom killed
+  Kubectl describe pod <podname>
+• OOM killed
+• ReadOnlyFilesystem issues: app tries to write a path thats read only then crashes
+
+Q:ImagePullBackOff:
+
+This status in Kubernetes means that the container in a pod is failing to pull the Docker image from the registry. Kubernetes attempts to pull the image but encounters an issue, so it retries periodically, eventually leading to the ImagePullBackOff status if it continues to fail.
+How to fix it
+•  Check pod events with kubectl describe pod <pod-name> for details.
+•  Verify the image name and tag.
+•  Ensure image pull secrets are set up correctly for private registries.
+•  Ensure proper network connectivity.
+
+Q:PodPending-state:
+
+first resources issue
+pv is not bound
+schedular...label mismatch
+taint and toleration
+
+Q:containercreating-state:
+pvc isnt mount to the node
+cni isnt assign ip to pod networking issue
+
+
+
+
+
