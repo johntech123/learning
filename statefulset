@@ -56,11 +56,11 @@ spec:
         ports:
         - containerPort: 80
         volumeMounts:
-        - name: www
+        - name: www                           this name should match with metadata name:www
           mountPath: /usr/share/nginx/html
   volumeClaimTemplates:
   - metadata:
-      name: www
+      name: www    name of the pvc claim (if pod name is nginx then pvc name will be : www-nginx-0,www-nginx-1,www-nginx-2)
     spec:
       accessModes: [ "ReadWriteOnce" ] 
       storageClassName: "my-storage-class"    here you have to provide storageclass name (example EBS)
