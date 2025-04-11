@@ -37,7 +37,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: nginx       #should match service label & selector
+      app: nginx       this is statefulset selctor (nothing to do with svc)
   serviceName: "nginx"   #must match the headless-service-name
   replicas: 3 # by default is 1
   minReadySeconds: 10 # by default is 0  after creation of pod k8s wait for 10 sec to mark is available once healthcheck is done
@@ -47,7 +47,7 @@ spec:
   template:
     metadata:
       labels:
-        app: nginx # has to match .spec.selector.matchLabels
+        app: nginx           #should match service label & selector  (copy from service selector)
     spec:
       terminationGracePeriodSeconds: 10  it tells k8s how many sec to wait before forcfully stopping a pod when its being dleted or rstarted
       containers:
@@ -71,6 +71,9 @@ spec:
 
 
 #in statefulset we have to provide servicename
+
+
+Q:
 
 
 
