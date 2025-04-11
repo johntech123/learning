@@ -41,3 +41,14 @@ spec:
             periodSeconds: 10            # Period to check readiness
             failureThreshold: 3          # Threshold for failure
             timeoutSeconds: 2            # Timeout for the probe to respond 2 sec responce ka wait karna 
+
+
+how does health check works under the hood
+
+your kubelet read the pod specification wait for initial delay sec and send http request directly to container ip with localhost and container should return the responce ass 200 OK
+200-399 ok success
+400 fail 
+then it will restart the pod 
+
+same for readiness but if prob fails kubelet doesnt restart the pod but stop the traffic to that pod until it became healthy
+
