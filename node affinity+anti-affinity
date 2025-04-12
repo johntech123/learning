@@ -1,1 +1,55 @@
+first label the node
+kubectl edit nodes <nodename>      within label section provide label & selector 
+or with cli
+kubectl label nodes <node-name> key=value   example: kubectl label nodes node-1 disktype=ssd
+
+now rest configuration in pod manifest
+
+node affinity:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:      this is hard-match
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: disk
+                operator: In
+                values:
+                - ssd
+     affinity:
+       nodeAffinity:
+         preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1                                this waight value define how much prefrence you give waight can be 100 means node is priority
+             preference:
+               matchExpressions:
+                - key: disk
+                  operator: In
+                  values:
+                   - ssd
+
+Ln operator: schedule a pod which has a matching key and value is in the list
+Notln: schedule a pod which doesn’t have this key and value or key is present but value is not in the list
+Exist: schedule a pod which has a matching key regardless of value
+DoesnotExist: only schedule a pod when node do not have the key=disktype at all value doesn’t matter
+
+
 
