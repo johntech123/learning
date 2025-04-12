@@ -52,4 +52,63 @@ Exist: schedule a pod which has a matching key regardless of value
 DoesnotExist: only schedule a pod when node do not have the key=disktype at all value doesn’t matter
 
 
+### POD AFFINITY:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+           - labelSelector:
+               matchExpressions:
+               - key: security
+                 operator: In
+                 values:
+                -S1
+             topologyKey: topology.kubernetes.io/zone
+      affinity:
+        podAffinity:
+         preferredDuringSchedulingIgnoredDuringExecution:
+         - weight: 1
+         - labelSelector:
+             matchExpressions:
+              - key: security
+                operator: In
+                values:
+               -S1
+           topologyKey: topology.kubernetes.io/zone    This ensure pod should schedule to the same node where other pods are running
+
+anti-pod-affinity
+
+   affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - store
+            topologyKey: "kubernetes.io/hostname"             
+
+
+
+
 
