@@ -1,1 +1,133 @@
+1) first create secure-ns
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: secure-ns
+  labels:
+    name: secure-ns
+
+2) then headless svc
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: secure-ns
+labels:
+  app: postgres
+spec:
+  clusterIP: None
+  selector:
+    app: postgre
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+
+3) statefulset
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: secure-ns
+spec:
+  serviceName: "postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo   should match with service selector
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+              name: postgres
+
+4) create network policy
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres-from-backend
+  namespace: secure-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres  # Target: PostgreSQL pods
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: backend  # Only allow pods with this label
+   engress
+      to:
+        - podSelector:
+            matchLabels:
+              app: backend  # Only allow pods with this label
+   
+      ports:
+        - protocol: TCP
+          port: 5432
+
+
+see a pod who has a matching label can only be able to access the db pod within the same ns (we dont need to specify ns related thing means apart from secure-ns no pod from other
+ns can able to access it.
+
+now if you want other ns should also access this databse apart from secure-ns then you have to do below things
+
+kubectl label namespace demo-ns env=dev    we have to label the ns   (this label has nothing to do with pod matching label)
+
+ ingress:
+    - from:
+        - namespaceSelector:           this is how you will define
+            matchLabels:
+              team: backend  # Any namespace with this label
+          podSelector:
+            matchLabels:
+              app: backend  # Only allow pods with this label
+
+please Note: if you explicly defind namespaceselector then pod friom that ns can only access the db pod ,a secure ns pod where your np created cant access it,
+
+## now to avoid confusion for service discovery label and network policy label below is the manifest where two label co-exist
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: demo-ns
+  labels:
+    app: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend              # For service discovery
+        access: postgres          # For network policy targeting
+    spec:
+      containers:
+        - name: backend
+          image: nginx:latest     # Replace with your backend app image
+          ports:
+            - containerPort: 80
+
+   
+
+
+
+
+
+
 
