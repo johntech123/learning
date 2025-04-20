@@ -28,3 +28,44 @@ spec:
                 port:
                   number: 80
 
+
+with tls 
+obtain tls certificate from acm then sealed them within k8s and specify it within ingress
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+  namespace: default
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/load-balancer-name: my-app-lb
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:123456789012:certificate/abcdefg123456
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+spec:
+  ingressClassName: alb
+  rules:
+    - host: foo.bar.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: my-service-v1
+                port:
+                  number: 80
+          - path: /payment
+            pathType: Prefix
+            backend:
+              service:
+                name: payment-service
+                port:
+                  number: 80
+
+alb.ingress.kubernetes.io/listen-ports	          Tells ALB to listen on HTTPS (443).
+alb.ingress.kubernetes.io/certificate-arn	        Points to your ACM TLS certificate.
+alb.ingress.kubernetes.io/ssl-redirect	          Redirects HTTP to HTTPS.
+
