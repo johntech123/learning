@@ -1,0 +1,18 @@
+helm repo add repo-name <url>    example  helm repo add bitnami <url>
+helm repo list                to check list of repo
+before helm install if you want to check the manifest or want to inject custom values then 
+helm pull <repo-name>/chart-name --untar          it will download the chart locally
+cd template
+helm show values bitnami/nginx >custom-values.yaml   if you dont want to download directory structure as above then use this to create custom values.yaml
+helm template hello bitnami/nginx -f custom-values.yaml    dry run with hello releasename
+helm install hello bitnami/nginx -f custom-values.yaml
+helm list                                                   list of releases/app version/chart version/ns you will see here
+helm status <release name>                   details of defined release
+helm history release-name                    detail with revision number
+helm rollback release-name <rivision-no>     if you dont specify rn then it will rollback to previous version
+helm uninstall <rn>                          to remove release
+helm repo remove <repo-name>                  ro remove repo
+
+
+
+
