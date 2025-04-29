@@ -15,4 +15,91 @@ helm repo remove <repo-name>                  ro remove repo
 
 
 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-deployment
+  labels:
+    app: {{ .Values.name }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      containers:
+        - name: {{ .Values.name }}-container
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          resources:
+            requests:
+              memory: "{{ .Values.resources.requests.memory }}"
+              cpu: "{{ .Values.resources.requests.cpu }}"
+            limits:
+              memory: "{{ .Values.resources.limits.memory }}"
+              cpu: "{{ .Values.resources.limits.cpu }}"
+          volumeMounts:
+            - name: {{ .Values.volume.name }}
+              mountPath: {{ .Values.volume.mountPath }}
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+            {{- end }}
+      volumes:
+        - name: {{ .Values.volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.volume.pvcClaimName }}
+      nodeSelector:
+        disktype: {{ .Values.nodeSelector.disktype }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: disktype
+                    operator: In
+                    values:
+                      - "{{ .Values.affinity.nodeTypes[0] }}"
+                      - "{{ .Values.affinity.nodeTypes[1] }}"
+
+name: myapp  # Name used for naming the deployment
+
+replicas: 2
+
+image:
+  repository: myapp
+  tag: latest
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "250m"
+  limits:
+    memory: "128Mi"
+    cpu: "500m"
+
+volume:
+  name: myapp-volume
+  mountPath: /data
+  pvcClaimName: myapp-pvc
+
+env:
+  MY_APP_ENV: production
+  MY_SECRET_KEY: secret_value_from_config
+
+nodeSelector:
+  disktype: ssd
+
+affinity:
+  nodeTypes:
+    - ssd
+    - hdd
+
+
+
+
 
