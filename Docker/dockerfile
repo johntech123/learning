@@ -47,6 +47,12 @@ CMD ["node", "app.js"]
 
 nginx dockerfile:
 
+FROM nginx:alpine
+COPY ./html /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+
 
 
 
@@ -87,6 +93,18 @@ check port forwarding with docker ps
 PORTS
 0.0.0.0:8080->80/tcp
 then access it with localhost http://localhost:8080
+
+
+6) how would you delete 5 conatainer with one command
+docker rm conatiner-1 conatiner-2 conatiner-3 conatiner-4 conatiner-5
+
+or if its running then (stop+dlt)
+docker rm -f conatiner-1 conatiner-2 conatiner-3 conatiner-4 conatiner-5
+
+7) how would you dlt all the container in one go
+
+docker rm -f $(docker ps -aq)
+
 
 
 
