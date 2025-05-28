@@ -1,1 +1,48 @@
+java: 
 
+FROM OpenJDK:17
+WPORKDIR /app
+COPY target/my-app.jar /app
+RUN mvn clean install
+exopse 8080
+cmd ["java", -"-jar" "my-app.jar"] 
+
+
+python:
+
+FROM python:latest
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 90
+CMD ["python", "app.py"]
+  
+
+multi-stage-docker-file:
+
+# --- Stage 1: Build the application ---
+FROM node:18 AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm clean install
+COPY . .
+RUN npm run build
+  
+# --- Stage 2: Serve the built app using NGINX ---
+FROM nginx:latest
+COPY --from=build /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+node.js dockerfile:
+
+FROM node:18
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm clean install
+COPY . .
+EXPOSE 3000
+CMD ["node", "app.js"]
+
+nginx dockerfile:
