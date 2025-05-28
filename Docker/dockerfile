@@ -105,6 +105,16 @@ docker rm -f conatiner-1 conatiner-2 conatiner-3 conatiner-4 conatiner-5
 
 docker rm -f $(docker ps -aq)
 
+8) how would you list the images and dlt it 
+
+docker images  or docker images ls
+
+docker rmi image1 image2 image3
+
+
+
+
+
 
 
 
