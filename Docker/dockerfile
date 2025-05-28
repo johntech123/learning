@@ -111,6 +111,14 @@ docker images  or docker images ls
 
 docker rmi image1 image2 image3
 
+9) how do you push image to container registry
+first make sure to give a tag
+docker tag <image name>  username/repo:tag
+
+now 
+docker push username/repo:latest
+docker pull username/repo:laest
+
 
 
 
