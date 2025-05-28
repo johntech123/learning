@@ -1,2 +1,57 @@
-lets say app is running now requirement is to upgrade the container with zero downtime
+1) IMAGE is created now how would you create 5 container
+
+docker run -d -p 8080:80 --name demo-container-1 new-image /bin/bash
+docker run -d -p 8080:80 --name demo-container-2 new-image /bin/bash
+docker run -d -p 8080:80 --name demo-container-3 new-image /bin/bash
+docker run -d -p 8080:80 --name demo-container-4 new-image /bin/bash
+docker run -d -p 8080:80 --name demo-container-5 new-image /bin/bash
+
+2)how would you deploy your container/run the container
+
+docker run -it -p 8080:80 --name demo-container-1 new-image /bin/bash  
+
+3) how would you list the container 
+
+docker ps 
+docker ps -a
+
+4)how do you check the container ip
+
+docker inspect <container-name> | grep -i IPADDRESS  or 
+kubectl get pod -o wide                     both command give you ip of container
+
+5) how would you access your containing containing web application
+
+first make sure container port is exposed
+docker run -d -p 8080:80 --name container-jio my-image 
+check port forwarding with docker ps 
+PORTS
+0.0.0.0:8080->80/tcp
+then access it with localhost http://localhost:8080
+
+
+6) how would you delete 5 conatainer with one command
+docker rm conatiner-1 conatiner-2 conatiner-3 conatiner-4 conatiner-5
+
+or if its running then (stop+dlt)
+docker rm -f conatiner-1 conatiner-2 conatiner-3 conatiner-4 conatiner-5
+
+7) how would you dlt all the container in one go
+
+docker rm -f $(docker ps -aq)
+
+8) how would you list the images and dlt it 
+
+docker images  or docker images ls
+
+docker rmi image1 image2 image3
+
+9) how do you push image to container registry
+first make sure to give a tag
+docker tag <image name>  username/repo:tag
+
+now 
+docker push username/repo:latest
+docker pull username/repo:laest
+
 
