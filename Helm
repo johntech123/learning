@@ -12,6 +12,7 @@ helm history release-name                    detail with revision number
 helm rollback release-name <rivision-no>     if you dont specify rn then it will rollback to previous version
 helm uninstall <rn>                          to remove release
 helm repo remove <repo-name>                  ro remove repo
+helm list -A                                list releases
 
 
 
